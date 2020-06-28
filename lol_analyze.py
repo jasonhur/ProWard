@@ -1,8 +1,19 @@
+'''
+For next time:
+Because this is a comparison tool, maybe focus on that.
+    After plot, SummonerA on avg gets 2.0cspm more than SummonerB.
+Now is the time to include roles played.
+    Input: Which role do you want to analyze(Offer 5)
+    Only search thru that role and output
+'''
+
+
 import requests
 import matplotlib.pyplot as plt
 import numpy as np
 
-api_key = "RGAPI-ff73c43d-d5dd-4855-b04c-fd2294a53260"
+# https://developer.riotgames.com/   for api key
+api_key = "RGAPI-5b027412-e7da-4fd5-9938-8253c914d999"
 
 def requestSummonerName(region, summonerName):
     URL = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + '?api_key=' + api_key
@@ -117,7 +128,7 @@ gpm = []
 cspm = []
 matchCounter = 0
 for matchNo in range(100):
-    # We only want to append relevant Summoner's Rift Games. queue: 400, 420
+    # We only want relevant Summoner's Rift Games. queue: 400, 420
     if matchlist_JSON['matches'][matchNo]['queue'] == 400 \
     or matchlist_JSON['matches'][matchNo]['queue'] == 420:
         matchId.append(matchlist_JSON['matches'][matchCounter]['gameId'])
@@ -160,8 +171,7 @@ for matchNo in range(100):
         gpm.append(round(goldEarned/gameDuration*60, 2))
         cs = totalMinionsKilled + neutralMinionsKilled
         cspm.append(round(cs/gameDuration*60, 2))
-        # we only need data for 30 most recent relevant matches
-        if matchCounter == 30:
+        if matchCounter == 30: # 30 most recent relevant matches
             break
 
 avg_kda = round(sum(kda)/matchCounter, 2)
@@ -227,10 +237,6 @@ avg_gpm2 = round(sum(gpm2)/matchCounter, 2)
 avg_vision2 = int(sum(vision2)/matchCounter)
 
 
-
-
-
-
 plot_bar_kda()
 plot_bar_dpm()
 plot_bar_cspm()
@@ -239,15 +245,3 @@ plot_bar_vision()
 
 #print("avg kda: ", round(avg_kda, 2))
 #print("Total Account Mastery:", summonerMastery)
-
-
-#pip the poro id: IS6jAFiLaj6yy3xcSpyIDpTMRvFEG6Vh3ph-I7RVhdyV7_M
-    #my acct
-    #mastery: 90
-#doublelift id: XV7kJbSAgcQO_JCx8EWs7grADevXPzUlR9QBV6oMvqpjwIg
-    #famous pro
-    #mastery: 302
-#c9 zvennn  id: RT0KducVYCbEwdnUrfQg5c1sh2LzIS2vXYuff336wrMeOo4
-    #rank 1
-    #mastery: 315
-
