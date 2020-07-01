@@ -5,6 +5,7 @@ Because this is a comparison tool, maybe focus on that.
 Now is the time to include roles played.
     Input: Which role do you want to analyze(Offer 5)
     Only search thru that role and output
+I prob don't need to repeat the same search and have 2 variable names for summoner1 & 2? Figure out a way with short list?
 '''
 
 
@@ -13,28 +14,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # https://developer.riotgames.com/   for api key
-api_key = "RGAPI-5b027412-e7da-4fd5-9938-8253c914d999"
+api_key = "RGAPI-ba183118-506e-4779-aa19-cb411b59c933"
 
+# API requests
 def requestSummonerName(region, summonerName):
-    URL = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + '?api_key=' + api_key
+    URL = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + api_key
     response = requests.get(URL)
     return response.json()
 
 def requestSummonerMastery(region, summonerID):
-    URL = 'https://' + region + '.api.riotgames.com/lol/champion-mastery/v4/scores/by-summoner/' + summonerID + '?api_key=' + api_key
+    URL = "https://" + region + ".api.riotgames.com/lol/champion-mastery/v4/scores/by-summoner/" + summonerID+ "?api_key=" + api_key
     response = requests.get(URL)
     return response.json()
 
 def requestMatchList(region, accountID):
-    URL = 'https://' + region + '.api.riotgames.com/lol/match/v4/matchlists/by-account/' + accountID + '?api_key=' + api_key
+    URL = "https://" + region + ".api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountID+ "?api_key=" + api_key
     response = requests.get(URL)
     return response.json()
 
 def requestMatchInfo(region, matchID):
-    URL = 'https://' + region + '.api.riotgames.com/lol/match/v4/matches/' + matchID + '?api_key=' + api_key
+    URL = "https://" + region + ".api.riotgames.com/lol/match/v4/matches/" + matchID + "?api_key=" + api_key
     response = requests.get(URL)
     return response.json()
 
+# Plotting comparisons of players' data
 def plot_bar_kda():
     index = np.arange(len(kda))
     width = 0.3    
@@ -101,32 +104,36 @@ def plot_bar_vision():
     plt.show()
     
 
-# get region and user info
-region = (str)(input('Type in a region: '))
-summonerName = (str)(input('Type in your summoner name: '))
-summonerName2 = (str)(input('Type in a pro summoner name: '))
+# Get region and user info as input
+region = (str)(input("Type in a region: "))
+summonerName = (str)(input("Type in your summoner name: "))
+summonerName2 = (str)(input("Type in a second summoner name: "))
 
-# find information about user from in-game(public) name
+# Find information about user from in-game(public) name
 name_JSON = requestSummonerName(region, summonerName)
 name_JSON2 = requestSummonerName(region, summonerName2)
 
+# Set variables to the corresponding data in JSON file
 summonerID = name_JSON['id']
-accountID = name_JSON["accountId"]
+accountID = name_JSON['accountId']
 summonerMastery = requestSummonerMastery(region, summonerID)
 summonerID2 = name_JSON2['id']
-accountID2 = name_JSON2["accountId"]
+accountID2 = name_JSON2['accountId']
 summonerMastery2 = requestSummonerMastery(region, summonerID2)
 
-# find list of player's matches to extract data from
+# Find list of player's matches to extract data from
 matchlist_JSON = requestMatchList(region, accountID)
+
+# Set empty lists
 matchId = []
-#gameTime = []
 kda = []
 dpm = []
 vision = []
 gpm = []
 cspm = []
 matchCounter = 0
+
+# View player's 100 most recent games
 for matchNo in range(100):
     # We only want relevant Summoner's Rift Games. queue: 400, 420
     if matchlist_JSON['matches'][matchNo]['queue'] == 400 \
@@ -135,9 +142,9 @@ for matchNo in range(100):
         matchID = str(matchId[matchCounter])
         match_JSON = requestMatchInfo(region, matchID)
         matchCounter += 1
-    
+        
+        # Find correct participant(player) in a single match
         if len(match_JSON) > 5:
-            # find correct participant(player) in single match
             for pNo in range(10):
                 participantName = match_JSON['participantIdentities'][pNo]['player']['summonerName']
                 participantName = str(participantName)
@@ -145,7 +152,7 @@ for matchNo in range(100):
                     partID = match_JSON['participantIdentities'][pNo]['participantId']
                     break
 
-        # find in-game statistics
+        # Find in-game statistics from JSON file and put into variables
         for pNo in range(10):
             if (match_JSON['participants'][pNo]['participantId'] == partID):
                 gameDuration = match_JSON['gameDuration']
@@ -159,12 +166,8 @@ for matchNo in range(100):
                 goldEarned = match_JSON['participants'][pNo]['stats']['goldEarned']
                 totalMinionsKilled = match_JSON['participants'][pNo]['stats']['totalMinionsKilled']
                 neutralMinionsKilled = match_JSON['participants'][pNo]['stats']['neutralMinionsKilled']
-        
-        #minutes.append(int(gameDuration / 60))
-        #minutes = int(gameDuration / 60)
-        #seconds = gameDuration % 60
-        #gameTime = str(minutes) + ':' + str(seconds)
-        #gameTime = str(gameTime)    # str like 20:10
+
+        # Append variable data into corresponding lists
         kda.append(round((kills + assists) / deaths, 2))
         dpm.append(round(totalDamageDealtToChampions/gameDuration*60, 2))
         vision.append(visionScore)
@@ -181,7 +184,7 @@ avg_gpm = round(sum(gpm)/matchCounter, 2)
 avg_vision = int(sum(vision)/matchCounter)
 
 
-
+# Repeat same search as above for Summoner2
 matchlist_JSON2 = requestMatchList(region, accountID2)
 matchId2 = []
 kda2 = []
@@ -206,7 +209,6 @@ for matchNo in range(100):
                     partID2 = match_JSON2['participantIdentities'][pNo]['participantId']
                     break
 
-        # find in-game statistics
         for pNo in range(10):
             if (match_JSON2['participants'][pNo]['participantId'] == partID2):
                 gameDuration = match_JSON2['gameDuration']
@@ -245,3 +247,15 @@ plot_bar_vision()
 
 #print("avg kda: ", round(avg_kda, 2))
 #print("Total Account Mastery:", summonerMastery)
+
+
+# Compare cspm
+if avg_cspm > avg_cspm2:
+    print("\nOn average, "+summonerName+" gets an average of "+str(avg_cspm)+" cs/min more than "+summonerName2+".")
+else:
+    print("\nOn average, "+summonerName2+" gets an average of "+str(avg_cspm)+" cs/min more than "+summonerName+".")
+
+print(summonerName+"'s total Champion Mastery: "+str(summonerMastery))
+print(summonerName2+"'s total Champion Mastery: "+str(summonerMastery2))
+
+
