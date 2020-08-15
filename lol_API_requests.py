@@ -1,7 +1,7 @@
 import requests
 #from lol_analyze import api_key
 
-api_key = "RGAPI-e86ef14f-aa89-4547-a018-cb498a78c959"
+api_key = "RGAPI-1b8e5082-f28d-4f5e-ae41-692a30f3068d"
 # API requests
 def requestSummonerName(region, summonerName):
     URL = "https://" + region + ".api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName + "?api_key=" + api_key
