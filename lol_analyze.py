@@ -4,51 +4,33 @@ Notes:
     -Overall scores
     -Champion scores
     -Role scores (Top, Jg, Mid, Bot, Sup)
-I prob don't need to repeat the same search and have 2 variable names for summoner1 & 2?
-    Figure out a way with short list?
-Database with all previous searches. a growing information base.
+Database with all previous searches. A growing information base.
 '''
 
-
-#import requests
-#import matplotlib.pyplot as plt
-#import numpy as np
-
 from lol_API_requests import requestSummonerName, requestSummonerMastery, requestMatchList, requestMatchInfo
-#from lol_plots import *
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-
-
-
-
-
-
-
-
-
 # Plotting comparisons of players' data
-
 def switch(measure):
+    measure = measure.lower()
     switcher = {
-        'KDA': 0,
-        'DPM': 1,
-        'CSPM': 2,
-        'GPM': 3,
-        'Vision': 4
+        'kda': 0,
+        'dpm': 1,
+        'cspm': 2,
+        'gpm': 3,
+        'vision': 4
     }
     return switcher.get(measure, "Invalid measure")
 def plot_bar():
     measure = (str)(input("Choose a measure to observe betweeen the 2 players:\n"\
                       + "{'KDA' 'DPM' 'CSPM' 'GPM' 'Vision'}   "))
     var = switch(measure)
-    #print('measure: ' + measure)
-    #print('var: ' + str(var))
     options = [kda, dpm, cspm, gpm, vision]
     options2 = [kda2, dpm2, cspm2, gpm2, vision2]
     naming = ['KDA', 'DPM', 'CSPM', 'GPM', 'Vision']
+    print("var type: ", type(var))
     if var == 4:
         avg_option = int(sum(vision)/matchCounter)
         avg_option2 = int(sum(vision2)/matchCounter)
@@ -57,10 +39,9 @@ def plot_bar():
         avg_option2 = round(sum(options2[var])/matchCounter, 2)
     
     index = np.arange(len(options[var]))
-    width = 0.3
     index2 = np.arange(len(options2[var]))
-    rect1 = plt.bar(index, options[var], width, color = 'b')
-    rect2 = plt.bar(index2 + width, options2[var], width, color = 'r')
+    rect1 = plt.bar(index, options[var], 0.3, color = 'b')
+    rect2 = plt.bar(index2 + 0.3, options2[var], 0.3, color = 'r')
     plt.xlabel('games', fontsize = 10)
     plt.ylabel(naming[var] + ' score', fontsize = 10)
     plt.title('Avg ' + naming[var] + ' score over ' + str(matchCounter) + ' games')
